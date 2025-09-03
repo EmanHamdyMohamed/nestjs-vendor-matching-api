@@ -4,11 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
+RUN rm -rf node_modules
+RUN npm install --force
 RUN npm ci
 
 COPY . .
 
-RUN npm run build
+RUN npm run build --force
 
 EXPOSE 3000
 

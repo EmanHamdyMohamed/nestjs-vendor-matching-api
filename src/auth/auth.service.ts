@@ -6,16 +6,13 @@ import {
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { MeDto } from './dto/me.dto';
+import { MeDtoResponse } from './dto/me.dto';
 import { RoleService } from 'src/role/role.service';
 import { LoginResponseDto } from './dto/login-response.dto';
-
-interface CreateUserDto {
-  email: string;
-  password: string;
-  roleId: number;
-  clientId?: number | null;
-}
+import { ClientService } from 'src/client/client.service';
+import { Client } from 'src/client/client.entity';
+import { CreateUserDto } from './dto/register.dto';
+import { Role } from 'src/role/role.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +20,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
+    private readonly clientService: ClientService,
   ) {}
 
   async login(email: string, pass: string): Promise<LoginResponseDto> {
@@ -38,7 +36,7 @@ export class AuthService {
     const payload = { email: user.email, id: user.id, role: user.roleId };
     const role = await this.roleService.findOne(user.roleId);
     return {
-      token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload, { secret: process.env.JWT_SECRET }),
       user: {
         id: user.id,
         email: user.email,
@@ -60,21 +58,25 @@ export class AuthService {
     if (!clientRole) {
       throw new ConflictException('Client role not found');
     }
+    // create client
+    const client = await this.clientService.create({
+      companyName: user.companyName,
+      contactEmail: user.contactEmail,
+    });
     const hashedPassword = await bcrypt.hash(user.password, 10);
     // Create user using the UserService create method
     const userToCreate = {
       email: user.email,
       password: hashedPassword,
       roleId: clientRole.id,
-      clientId: user.clientId,
+      clientId: client.id,
     };
     await this.userService.create(userToCreate);
     return true;
   }
 
-  async me(token: string): Promise<MeDto> {
+  async me(token: string): Promise<MeDtoResponse> {
     const decoded = await this.jwtService.decode(token.split(' ')[1]);
-    console.log('decoded: ', decoded);
     if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
       throw new UnauthorizedException();
     }
@@ -82,6 +84,22 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user as unknown as MeDto;
+    let client: Client | null = null;
+    if (user.clientId) {
+      client = await this.clientService.findOne(user.clientId);
+    }
+    const role: Role | null = await this.roleService.findOne(user.roleId);
+    return {
+      id: user.id,
+      email: user.email,
+      role: role?.role,
+      client: client
+        ? {
+            id: client.id,
+            companyName: client.companyName,
+            contactEmail: client.contactEmail,
+          }
+        : null,
+    };
   }
 }

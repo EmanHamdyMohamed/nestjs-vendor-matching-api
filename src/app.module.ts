@@ -13,9 +13,14 @@ import { Vendor } from './vendor/vendor.entity';
 import { Match } from './matches/match.entity';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { EmailService } from './email/email.service';
+import { EmailModule } from './email/email.module';
+import { ProjectModule } from './project/project.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
         return {
@@ -38,9 +43,11 @@ import { AuthMiddleware } from './auth/auth.middleware';
     RoleModule,
     UserModule,
     AuthModule,
+    EmailModule,
+    ProjectModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
@@ -50,6 +57,7 @@ export class AppModule {
         { path: 'health', method: RequestMethod.GET },
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'auth/register/client', method: RequestMethod.POST },
-      );
+      )
+      .forRoutes('*');
   }
 }

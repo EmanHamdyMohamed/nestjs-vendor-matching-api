@@ -27,10 +27,11 @@ export class AppController {
         MYSQL_PORT: process.env.MYSQL_PORT,
         MYSQL_USER: process.env.MYSQL_USER,
         MYSQL_DATABASE: process.env.MYSQL_DATABASE,
-        DATABASE_HOST: process.env.DATABASE_HOST,
-        DATABASE_PORT: process.env.DATABASE_PORT,
-        DATABASE_USERNAME: process.env.DATABASE_USERNAME,
-        DATABASE_NAME: process.env.DATABASE_NAME,
+        SMTP_HOST: process.env.SMTP_HOST,
+        SMTP_PORT: process.env.SMTP_PORT,
+        SMTP_USER: process.env.SMTP_USER,
+        SMTP_FROM: process.env.SMTP_FROM,
+        NODE_ENV: process.env.NODE_ENV,
       };
 
       // Test a simple query
@@ -52,10 +53,11 @@ export class AppController {
           MYSQL_PORT: process.env.MYSQL_PORT,
           MYSQL_USER: process.env.MYSQL_USER,
           MYSQL_DATABASE: process.env.MYSQL_DATABASE,
-          DATABASE_HOST: process.env.DATABASE_HOST,
-          DATABASE_PORT: process.env.DATABASE_PORT,
-          DATABASE_USERNAME: process.env.DATABASE_USERNAME,
-          DATABASE_NAME: process.env.DATABASE_NAME,
+          SMTP_HOST: process.env.SMTP_HOST,
+          SMTP_PORT: process.env.SMTP_PORT,
+          SMTP_USER: process.env.SMTP_USER,
+          SMTP_FROM: process.env.SMTP_FROM,
+          NODE_ENV: process.env.NODE_ENV,
         },
       };
 

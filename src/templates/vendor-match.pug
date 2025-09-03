@@ -1,0 +1,197 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Vendor Match Results - #{projectName || 'Your Project'}
+    style.
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #2c3e50;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ecf0f1;
+      }
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(52, 73, 94, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #3498db;
+        margin: 0;
+        font-size: 28px;
+      }
+      .header p {
+        color: #7f8c8d;
+        margin: 10px 0 0 0;
+        font-size: 16px;
+      }
+      .summary {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid #3498db;
+      }
+      .summary h2 {
+        color: #3498db;
+        margin: 0 0 15px 0;
+        font-size: 20px;
+      }
+      .vendor-list {
+        margin-top: 20px;
+      }
+      .vendor-item {
+        background-color: #fff;
+        border: 1px solid #bdc3c7;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: box-shadow 0.3s ease;
+      }
+      .vendor-item:hover {
+        box-shadow: 0 4px 12px rgba(52, 73, 94, 0.15);
+      }
+      .vendor-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #3498db;
+        margin-bottom: 10px;
+      }
+      .vendor-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .detail-label {
+        font-weight: bold;
+        color: #7f8c8d;
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+      .detail-value {
+        color: #2c3e50;
+        font-size: 14px;
+      }
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .star {
+        color: #ffc107;
+        font-size: 16px;
+      }
+      .services {
+        margin-top: 10px;
+      }
+      .service-tag {
+        display: inline-block;
+        background-color: #e8f4fd;
+        color: #2980b9;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin: 2px;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #bdc3c7;
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+      .cta-button:hover {
+        background-color: #2980b9;
+      }
+      @media (max-width: 600px) {
+        .vendor-details {
+          grid-template-columns: 1fr;
+        }
+      }
+  body
+    .container
+      .header
+        h1 🎯 Vendor Match Results
+        p We found the perfect vendors for your project!
+      
+      .summary
+        h2 📊 Match Summary
+        p 
+          strong #{vendorsCount} 
+          | vendor#{vendorsCount !== 1 ? 's' : ''} found for 
+          strong your project
+        if country
+          p 
+            | Location: 
+            strong #{country}
+        if servicesNeeded && servicesNeeded.length > 0
+          p 
+            | Services needed: 
+            strong #{servicesNeeded.join(', ')}
+
+      .vendor-list
+        each vendor in vendors
+          .vendor-item
+            .vendor-name #{vendor.name}
+            .vendor-details
+              .detail-item
+                .detail-label Rating
+                .detail-value
+                  .rating
+                    - var stars = Math.floor(vendor.rating || 0)
+                    - for (var i = 0; i < 5; i++)
+                      if i < stars
+                        span.star ★
+                      else
+                        span.star ☆
+                    span (#{vendor.rating || 'N/A'})
+              .detail-item
+                .detail-label Response Time
+                .detail-value #{vendor.responseSlaHours || 'N/A'} hours
+              .detail-item
+                .detail-label Countries
+                .detail-value #{Array.isArray(vendor.countriesSupported) ? vendor.countriesSupported.join(', ') : 'N/A'}
+              .detail-item
+                .detail-label Match Score
+                .detail-value #{vendor.matchScore || 'N/A'}/10
+            if vendor.servicesOffered && Array.isArray(vendor.servicesOffered)
+              .services
+                .detail-label Services Offered
+                each service in vendor.servicesOffered
+                  span.service-tag #{service}
+
+      .footer
+        p 
+          | This email was generated by the Vendor Matching System.
+          br
+          | For more information, please contact our support team.
+        if contactEmail
+          p Contact: #{contactEmail}

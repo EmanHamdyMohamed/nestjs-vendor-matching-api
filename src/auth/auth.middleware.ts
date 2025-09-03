@@ -9,7 +9,6 @@ export class AuthMiddleware implements NestMiddleware {
 
   use(req: any, res: any, next: () => void) {
     const authHeader = req.headers.authorization;
-    console.log('authHeader: ', authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException(
         'Missing or invalid Authorization header',

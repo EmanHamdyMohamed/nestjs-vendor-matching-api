@@ -9,8 +9,8 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { MeDto } from './dto/me.dto';
-import { UserDto } from './dto/user.dto';
+import { MeDtoResponse } from './dto/me.dto';
+import { CreateUserDto } from './dto/register.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginResponseDto } from './dto/login-response.dto';
 
@@ -33,14 +33,14 @@ export class AuthController {
         'Invalid registration data. Please provide email, password, and role',
       );
     }
-    await this.authService.registerClient(registerDto as unknown as UserDto);
+    await this.authService.registerClient(registerDto as unknown as CreateUserDto);
     return {
       email: registerDto.email,
     };
   }
 
   @Get('me')
-  async me(@Headers('Authorization') token: string): Promise<MeDto> {
+  async me(@Headers('Authorization') token: string): Promise<MeDtoResponse> {
     return await this.authService.me(token);
   }
 }
